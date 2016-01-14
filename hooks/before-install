@@ -1,0 +1,3 @@
+# Add the "couchdb" user/group
+getent group couchdb >/dev/null || groupadd --system couchdb
+getent passwd couchdb >/dev/null || useradd --system --comment "couchdb User" --gid couchdb --shell /bin/bash couchdb
