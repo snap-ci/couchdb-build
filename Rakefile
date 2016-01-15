@@ -22,6 +22,7 @@ version = "1.6.1"
 release = Time.now.utc.strftime('%Y%m%d%H%M%S')
 name = "couchdb-#{version}"
 before_install = File.expand_path("../hooks/before-install", __FILE__)
+init_file = File.expand_path("../init/couchdb.init", __FILE__)
 
 description_string = %Q{CouchDB is an open source database that focuses on ease of use and on being a database that completely embraces the web. It is a document-oriented NoSQL database that uses JSON to store data, JavaScript as its query language using MapReduce, and HTTP for an API.}
 
@@ -51,32 +52,9 @@ end
 task :dependencies do
   if distro == "deb"
     sh("sudo apt-get -y update")
-    sh("sudo apt-get -y install libicu-dev pkg-config libmozjs185-dev help2man")
-    sh("sudo apt-get -y install libtool automake autoconf autoconf-archive")
-    sh("sudo apt-get -y install texlive-latex-base texlive-latex-recommended")
-    sh("sudo apt-get -y install texlive-latex-extra texlive-fonts-recommended texinfo")
-    sh("sudo apt-get -y install python-pygments python-docutils python-sphinx")
-
-    sh("sudo apt-get install -y erlang-base-hipe")
-    sh("sudo apt-get install -y erlang-dev")
-    sh("sudo apt-get install -y erlang-manpages")
-    sh("sudo apt-get install -y erlang-eunit")
-    sh("sudo apt-get install -y erlang-nox")
+    sh("sudo apt-get -y install libicu-dev pkg-config libmozjs185-dev help2man libtool automake autoconf autoconf-archive texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texinfo python-pygments python-docutils python-sphinx erlang-base-hipe erlang-dev erlang-manpages erlang-eunit erlang-nox")
   else
-    sh("sudo yum install -y autoconf")
-    sh("sudo yum install -y autoconf-archive")
-    sh("sudo yum install -y automake")
-    sh("sudo yum install -y curl-devel")
-    sh("sudo yum install -y erlang-asn1")
-    sh("sudo yum install -y erlang-erts")
-    sh("sudo yum install -y erlang-eunit")
-    sh("sudo yum install -y erlang-os_mon")
-    sh("sudo yum install -y erlang-xmerl")
-    sh("sudo yum install -y help2man")
-    sh("sudo yum install -y js-devel")
-    sh("sudo yum install -y libicu-devel")
-    sh("sudo yum install -y libtool")
-    sh("sudo yum install -y perl-Test-Harness")
+    sh("sudo yum install -y autoconf automake curl-devel erlang-asn1 erlang-erts erlang-eunit erlang-os_mon erlang-xmerl help2man js-devel libicu-devel libtool perl-Test-Harness")
   end
 end
 
@@ -84,7 +62,7 @@ task :configure do
   cd "downloads" do
     cd "couchdb-#{version}" do
       sh("./bootstrap")
-      sh "./configure --prefix=/opt/local/couchdb/#{version} > #{File.dirname(__FILE__)}/log/configure.#{version}.log 2>&1"
+      sh "./configure --prefix=/opt/local/couchdb/#{version} --with-erlang=/usr/lib64/erlang/usr/include/ > #{File.dirname(__FILE__)}/log/configure.#{version}.log 2>&1"
     end
   end
 end
@@ -123,16 +101,10 @@ task :dist do
 
   mkdir_p "#{jailed_root}/usr/local/bin"
   mkdir_p "#{jailed_root}/etc/default"
-  mkdir_p "#{jailed_root}/etc/init.d"
+  mkdir_p "#{jailed_root}/var/run/couchdb/"
 
   cd "#{jailed_root}/usr/local/bin" do
     Dir["../../../opt/local/couchdb/#{version}/bin/*"].each do |bin_file|
-      ln_sf bin_file, File.basename(bin_file)
-    end
-  end
-
-  cd "#{jailed_root}/etc/init.d" do
-    Dir["../../opt/local/couchdb/#{version}/etc/init.d/*"].each do |bin_file|
       ln_sf bin_file, File.basename(bin_file)
     end
   end
@@ -147,7 +119,7 @@ task :dist do
 
   cd "pkg" do
     sh(%Q{
-      bundle exec fpm -s dir -t #{distro} --name couchdb-#{version} -a x86_64 --version "#{version}" -C #{jailed_root} --verbose #{fpm_opts} --maintainer snap-ci@thoughtworks.com --vendor snap-ci@thoughtworks.com --url http://snap-ci.com --description "#{description_string}" --iteration #{release} --license 'GPLv2' --before-install #{before_install} .
+      bundle exec fpm -s dir -t #{distro} --name couchdb-#{version} -a x86_64 --version "#{version}" -C #{jailed_root} --verbose #{fpm_opts} --maintainer snap-ci@thoughtworks.com --vendor snap-ci@thoughtworks.com --url http://snap-ci.com --description "#{description_string}" --iteration #{release} --license 'GPLv2' --before-install #{before_install} --rpm-init #{init_file} .
     })
   end
 end
