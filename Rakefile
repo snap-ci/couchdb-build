@@ -54,7 +54,7 @@ task :dependencies do
     sh("sudo apt-get -y update")
     sh("sudo apt-get -y install libicu-dev pkg-config libmozjs185-dev help2man libtool automake autoconf autoconf-archive texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texinfo python-pygments python-docutils python-sphinx erlang-base-hipe erlang-dev erlang-manpages erlang-eunit erlang-nox")
   else
-    sh("sudo yum install -y autoconf automake curl-devel erlang-asn1 erlang-erts erlang-eunit erlang-os_mon erlang-xmerl help2man js-devel libicu-devel libtool perl-Test-Harness")
+    sh("sudo yum install -y autoconf automake curl-devel erlang-asn1 erlang-erts erlang-eunit erlang-os_mon erlang-xmerl help2man js-devel libicu-devel libtool perl-Test-Harness autoconf-archive-v2010.02.14")
   end
 end
 
