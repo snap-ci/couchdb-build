@@ -81,7 +81,7 @@ task :make_install do
   rm_rf  jailed_root
   mkdir_p jailed_root
   cd "downloads/couchdb-#{version}" do
-    sh("sudo make install DESTDIR=#{jailed_root} > #{File.dirname(__FILE__)}/log/make-install.#{version}.log 2>&1")
+    sh("make install DESTDIR=#{jailed_root} > #{File.dirname(__FILE__)}/log/make-install.#{version}.log 2>&1")
   end
 end
 
