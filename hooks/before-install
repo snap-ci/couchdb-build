@@ -1,7 +1,3 @@
 # Add the "couchdb" user/group
 getent group couchdb >/dev/null || groupadd --system couchdb
-getent passwd couchdb >/dev/null || useradd --system --comment "couchdb User" --gid couchdb --shell /bin/bash couchdb
-mkdir /home/couchdb
-chown couchdb /home/couchdb
-chgrp couchdb /home/couchdb
-
+getent passwd couchdb >/dev/null || useradd --system --comment "couchdb User" --gid couchdb --shell /bin/bash couchdb --home /var/lib/couchdb --create-home
