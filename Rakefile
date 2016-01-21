@@ -115,7 +115,14 @@ task :dist do
     end
   end
 
-
+  if distro == "deb"
+    mkdir_p "#{jailed_root}/etc/init.d"
+    cd "#{jailed_root}/etc/init.d" do
+      Dir["../../opt/local/couchdb/#{version}/etc/init.d/*"].each do |bin_file|
+        ln_sf bin_file, File.basename(bin_file)
+      end
+    end
+  end
 
   cd "pkg" do
     sh(%Q{
