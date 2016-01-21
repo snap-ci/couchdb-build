@@ -18,15 +18,16 @@ unless distro
   $stderr.puts "Don't know what distro I'm running on -- not sure if I can build!"
 end
 
+jailed_root = File.expand_path('../jailed-root', __FILE__)
+
 version = "1.6.1"
 release = Time.now.utc.strftime('%Y%m%d%H%M%S')
 name = "couchdb-#{version}"
 before_install = File.expand_path("../hooks/before-install", __FILE__)
-init_file = File.expand_path("../init/couchdb.init", __FILE__)
+rpm_init_file = File.expand_path("../init/couchdb.init", __FILE__)
+deb_init_file = File.expand_path("#{jailed_root}/opt/local/couchdb/#{version}/etc/init.d/couchdb", __FILE__)
 
 description_string = %Q{CouchDB is an open source database that focuses on ease of use and on being a database that completely embraces the web. It is a document-oriented NoSQL database that uses JSON to store data, JavaScript as its query language using MapReduce, and HTTP for an API.}
-
-jailed_root = File.expand_path('../jailed-root', __FILE__)
 
 CLEAN.include("downloads")
 CLEAN.include("jailed-root")
@@ -115,18 +116,9 @@ task :dist do
     end
   end
 
-  if distro == "deb"
-    mkdir_p "#{jailed_root}/etc/init.d"
-    cd "#{jailed_root}/etc/init.d" do
-      Dir["../../opt/local/couchdb/#{version}/etc/init.d/*"].each do |bin_file|
-        ln_sf bin_file, File.basename(bin_file)
-      end
-    end
-  end
-
   cd "pkg" do
     sh(%Q{
-      bundle exec fpm -s dir -t #{distro} --name couchdb-#{version} -a x86_64 --version "#{version}" -C #{jailed_root} --verbose #{fpm_opts} --maintainer snap-ci@thoughtworks.com --vendor snap-ci@thoughtworks.com --url http://snap-ci.com --description "#{description_string}" --iteration #{release} --license 'GPLv2' --before-install #{before_install} --rpm-init #{init_file} .
+      bundle exec fpm -s dir -t #{distro} --name couchdb-#{version} -a x86_64 --version "#{version}" -C #{jailed_root} --verbose #{fpm_opts} --maintainer snap-ci@thoughtworks.com --vendor snap-ci@thoughtworks.com --url http://snap-ci.com --description "#{description_string}" --iteration #{release} --license 'GPLv2' --before-install #{before_install} --rpm-init #{rpm_init_file} --deb-init #{deb_init_file} .
     })
   end
 end
