@@ -1,4 +1,4 @@
-This repo contains scripts needed to build deb and rpms for various versions of CouchDB
+This repo contains scripts needed to build deb and rpms for various versions of CouchDB.
 
 # How to build the package
 
