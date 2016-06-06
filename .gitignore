@@ -2,4 +2,7 @@
 /downloads/
 /.bundle/
 /bin/
+/jailed-root/
+/log/
+/pkg/
 Gemfile.lock
