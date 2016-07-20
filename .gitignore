@@ -5,3 +5,5 @@
 /jailed-root/
 /log/
 /pkg/
+.tags
+Gemfile.lock
